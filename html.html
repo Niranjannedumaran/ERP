@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College ERP - Student Portal</title>
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --primary-dark: #2563eb;
+            --text-color: #334155;
+            --light-gray: #f8fafc;
+            --border-color: #e2e8f0;
+            --accent-color: #4ea8de;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+        
+        .logo {
+            padding: 0 24px 24px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav {
+            flex-grow: 1;
+            margin-top: 16px;
+        }
+        
+        .nav-item {
+            list-style: none;
+            margin-bottom: 4px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.08);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .logout {
+            padding: 12px 24px;
+            color: #f43f5e;
+            text-decoration: none;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .logout:hover {
+            color: #e11d48;
+            background-color: rgba(244, 63, 94, 0.08);
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 24px 32px;
+            margin-left: 240px;
+            width: calc(100% - 240px);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .section:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .section-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            background-color: rgba(243, 244, 246, 0.5);
+        }
+        
+        .section-content {
+            padding: 24px;
+        }
+        
+        /* Profile Section */
+        .profile {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .profile-details {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+        
+        .profile-id {
+            color: #64748b;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        .profile-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px 24px;
+        }
+        
+        .profile-field {
+            margin-bottom: 8px;
+        }
+        
+        .field-label {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        
+        .field-value {
+            font-size: 15px;
+            color: var(--text-color);
+        }
+        
+        /* Results Section */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .results-table th, .results-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .results-table th {
+            font-weight: 600;
+            background-color: rgba(243, 244, 246, 0.5);
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .results-table td {
+            font-size: 15px;
+        }
+        
+        .results-table tr:hover td {
+            background-color: rgba(243, 244, 246, 0.5);
+        }
+        
+        .semester-header {
+            background-color: rgba(243, 244, 246, 0.5);
+            padding: 12px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        
+        .grade {
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            min-width: 32px;
+            text-align: center;
+        }
+        
+        .grade.a {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+        
+        .grade.b {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .grade.c {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .gpa {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        /* Attendance Section */
+        .attendance {
+            margin-top: 24px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .overall-percentage {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: rgba(59, 130, 246, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .percentage-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .percentage-label {
+            font-size: 14px;
+            color: #64748b;
+            margin: 5px 0 0;
+        }
+        
+        /* Fees Section */
+        .fees {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin-top: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        .fees:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .fees-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .fees-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background-color: rgba(59, 130, 246, 0.08);
+            border-radius: 8px;
+        }
+        
+        .fees-label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .fees-amount {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .fees-table {
+            margin-bottom: 24px;
+        }
+        
+        .fees-button button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .fees-button button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .fees-terms, .fees-contact {
+            margin-top: 16px;
+            font-size: 14px;
+        }
+        
+        .fees-terms a, .fees-contact a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .fees-terms a:hover, .fees-contact a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Additional Styles */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .present {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+        
+        .absent {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .logo {
+                padding: 0;
+                margin-right: 16px;
+            }
+            
+            .nav {
+                display: flex;
+                margin-top: 0;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+            
+            .nav-item {
+                margin-right: 8px;
+                margin-bottom: 0;
+            }
+            
+            .nav-link {
+                padding: 8px 16px;
+                border-radius: 6px;
+                border-left: none;
+            }
+            
+            .nav-link:hover, .nav-link.active {
+                border-left: none;
+                background-color: rgba(59, 130, 246, 0.08);
+            }
+            
+            .logout {
+                margin-top: 0;
+                margin-left: auto;
+            }
+            
+            .main {
+                padding: 16px;
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .profile {
+                flex-direction: column;
+            }
+            
+            .profile-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Icons using Unicode symbols */
+        .icon-profile::before { content: "👤"; margin-right: 10px; }
+        .icon-results::before { content: "📊"; margin-right: 10px; }
+        .icon-attendance::before { content: "📅"; margin-right: 10px; }
+        .icon-fees::before { content: "💰"; margin-right: 10px; }
+        .icon-logout::before { content: "🚪"; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">EduERP</div>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a href="#profile" class="nav-link active"><span class="icon-profile"></span>Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#results" class="nav-link"><span class="icon-results"></span>Results</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#attendance" class="nav-link"><span class="icon-attendance"></span>Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#fees" class="nav-link"><span class="icon-fees"></span>Fees Due</a>
+                </li>
+            </ul>
+            <a href="login.html" class="logout"><span class="icon-logout"></span>Logout</a>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main">
+            <div class="header">
+                <h1 class="page-title">Student Portal</h1>
+                <div class="user-welcome">Welcome, John Smith</div>
+            </div>
+            
+            <!-- Profile Section -->
+            <div id="profile" class="section">
+                <div class="section-header">Student Profile</div>
+                <div class="section-content">
+                    <div class="profile">
+                        <div class="profile-image">JS</div>
+                        <div class="profile-details">
+                            <div class="profile-name">John Smith</div>
+                            <div class="profile-id">ID: ST12345</div>
+                            <div class="profile-fields">
+                                <div class="profile-field">
+                                    <div class="field-label">Department</div>
+                                    <div class="field-value">Computer Science</div>
+                                </div>
+                                <div class="profile-field">
+                                    <div class="field-label">Semester</div>
+                                    <div class="field-value">4th</div>
+                                </div>
+                                <div class="profile-field">
+                                    <div class="field-label">Batch</div>
+                                    <div class="field-value">2023-2027</div>
+                                </div>
+                                <div class="profile-field">
+                                    <div class="field-label">Email</div>
+                                    <div class="field-value">john.smith@college.edu</div>
+                                </div>
+                                <div class="profile-field">
+                                    <div class="field-label">Phone</div>
+                                    <div class="field-value">(555) 123-4567</div>
+                                </div>
+                                <div class="profile-field">
+                                    <div class="field-label">Address</div>
+                                    <div class="field-value">123 Campus Drive, College Town</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="results" class="section">
+                <div class="section-header">Academic Results</div>
+                <div class="section-content">
+                    <div class="semester-header">Spring 2025</div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CS301</td>
+                                <td>Data Structures</td>
+                                <td>4</td>
+                                <td><span class="grade a">A</span></td>
+                            </tr>
+                            <tr>
+                                <td>CS302</td>
+                                <td>Database Systems</td>
+                                <td>3</td>
+                                <td><span class="grade b">B+</span></td>
+                            </tr>
+                            <tr>
+                                <td>CS303</td>
+                                <td>Computer Networks</td>
+                                <td>4</td>
+                                <td><span class="grade a">A-</span></td>
+                            </tr>
+                            <tr>
+                                <td>MA201</td>
+                                <td>Linear Algebra</td>
+                                <td>3</td>
+                                <td><span class="grade b">B</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Semester GPA:</td>
+                                <td class="gpa">3.75</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="semester-header" style="margin-top: 20px;">Fall 2024</div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CS201</td>
+                                <td>Object-Oriented Programming</td>
+                                <td>4</td>
+                                <td><span class="grade a">A</span></td>
+                            </tr>
+                            <tr>
+                                <td>CS202</td>
+                                <td>Operating Systems</td>
+                                <td>3</td>
+                                <td><span class="grade b">B+</span></td>
+                            </tr>
+                            <tr>
+                                <td>CS203</td>
+                                <td>Software Engineering</td>
+                                <td>4</td>
+                                <td><span class="grade a">A-</span></td>
+                            </tr>
+                            <tr>
+                                <td>MA101</td>
+                                <td>Calculus</td>
+                                <td>3</td>
+                                <td><span class="grade b">B</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Semester GPA:</td>
+                                <td class="gpa">3.75</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="semester-header" style="margin-top: 20px;">Summer 2024</div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CS101</td>
+                                <td>Introduction to Computer Science</td>
+                                <td>3</td>
+                                <td><span class="grade a">A</span></td>
+                            </tr>
+                            <tr>
+                                <td>CS102</td>
+                                <td>Introduction to Programming</td>
+                                <td>3</td>
+                                <td><span class="grade b">B+</span></td>
+                            </tr>
+                            <tr>
+                                <td>MA001</td>
+                                <td>Mathematics for Computer Science</td>
+                                <td>3</td>
+                                <td><span class="grade b">B</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Semester GPA:</td>
+                                <td class="gpa">3.75</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Cumulative GPA:</td>
+                                <td class="gpa">3.75</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Attendance Section -->
+            <div id="attendance" class="card">
+                <div class="header">
+                    <h1>My Attendance</h1>
+                </div>
+                
+                <div class="overall-percentage">
+                    <p class="percentage-value">87.5%</p>
+                    <p class="percentage-label">Overall Attendance</p>
+                </div>
+                
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Present (in hr)</th>
+                            <th>Absent (in hr)</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mathematics</td>
+                            <td>108</td>
+                            <td>2</td>
+                            <td><span class="status-badge present">90%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Computer Science</td>
+                            <td>109</td>
+                            <td>1</td>
+                            <td><span class="status-badge present">95%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Physics</td>
+                            <td>106</td>
+                            <td>4</td>
+                            <td><span class="status-badge present">80%</span></td>
+                        </tr>
+                        <tr>
+                            <td>English</td>
+                            <td>107</td>
+                            <td>3</td>
+                            <td><span class="status-badge present">85%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Fees Section -->
+            <div id="fees" class="fees">
+                <div class="fees-header">Fees Due</div>
+                <div class="fees-content">
+                    <div class="fees-label">Total Fees Due:</div>
+                    <div class="fees-amount">$1,500.00</div>
+                </div>
+                <div class="fees-table">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Fee Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Registration Fee</td>
+                                <td>$500.00</td>
+                            </tr>
+                            <tr>
+                                <td>Admission Fee</td>
+                                <td>$1,000.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="fees-button">
+                    <button>Pay Fees</button>
+                </div>
+                <div class="fees-terms">
+                    <p>By clicking "Pay Fees", you agree to the <a href="https://vistas.ac.in/terms-and-conditions/">fees terms</a> and <a href="https://vistas.ac.in/privacy-statement/">privacy policy</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
